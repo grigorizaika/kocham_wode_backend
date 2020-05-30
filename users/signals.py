@@ -17,3 +17,9 @@ def create_and_set_user_preferences(sender, instance, created, **kwargs):
 def delete_user_preferences(sender, instance, **kwargs):
     instance.preferences.delete()
 
+
+# NOTE: should this be here at all? 
+# Or should both creation and deletion be in views?
+@receiver(signals.post_delete, sender=User)
+def delete_cognito_user(sender, instance, **kwargs):
+    pass
