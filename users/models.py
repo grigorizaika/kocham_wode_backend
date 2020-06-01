@@ -9,10 +9,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email'), unique=True)
     name = models.CharField(max_length=40)
     surname = models.CharField(max_length=40)
-    preferences = models.OneToOneField(
-        'preferences.Preferences',
-        on_delete=models.SET_NULL,
-        null=True, blank=True)
 
     is_staff = models.BooleanField(default=False)
 

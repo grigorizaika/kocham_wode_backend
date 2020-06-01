@@ -10,16 +10,12 @@ class Preferences(models.Model):
         max_digits=4, decimal_places=1, default=0.01,
         validators=[MinValueValidator(Decimal('0.01'))])
     cup_vol = models.IntegerField(default=200)
-
-    def get_user(self):
-        try:
-            return User.objects.get(preferences=self)
-        except User.DoesNotExist:
-            return None
+    user =  models.OneToOneField(
+        'users.User',
+        on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'pref. {self.pk} for {self.get_user()}'
+        return f'pref. {self.pk} for {self.user}'
 
-    
     class Meta:
         verbose_name_plural = 'Preferences'

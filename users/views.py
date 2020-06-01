@@ -31,7 +31,7 @@ def register_user(request):
 
 class UserView(APIView):
     
-    def get_all_users(self, serialized=False):
+    def get_all_users(self, serialized=True):
         all_users = User.objects.all()
 
         if serialized:
@@ -39,7 +39,7 @@ class UserView(APIView):
 
         return all_users
 
-    def get_user_by_id(self, id, serialized=False):
+    def get_user_by_id(self, id, serialized=True):
         user = User.objects.get(pk=id)
 
         if serialized:
@@ -48,7 +48,7 @@ class UserView(APIView):
         return user
 
     def update_user(self, id, data):
-        user = self.get_user_by_id(id)
+        user = self.get_user_by_id(id, serialized=False)
         serializer = UserSerializer(user, data=data, partial=True)
         
         if serializer.is_valid():
@@ -58,19 +58,23 @@ class UserView(APIView):
             raise ValueError(serializer.errors)
 
     def delete_user(self, id):
-        self.get_user_by_id(id).delete()
+        self.get_user_by_id(id, serialized=False).delete()
         return id
 
     def get(self, request, *args, **kwargs):
         if 'id' in kwargs:
-            # TODO: move it to object-level premission logic
+            # TODO: move it to object-level permission logic
             if (request.user.id == kwargs['id']
                     or request.user.is_staff):
                 try:
-                    user = self.get_user_by_id(kwargs['id'], serialized=True)
+                    user = self.get_user_by_id(kwargs['id'])
 
                 except User.DoesNotExist as dne:
-                    return Response(dne, status=status.HTTP_404_NOT_FOUND)
+                    if request.user.is_staff:
+                        return Response(dne, status=status.HTTP_404_NOT_FOUND)
+                    else:
+                        response = {'users': 'Permission denied'}
+                        return Response(response, status=status.HTTP_403_FORBIDDEN)
 
                 return Response(user)
 
@@ -79,17 +83,18 @@ class UserView(APIView):
                 return Response(response, status=status.HTTP_403_FORBIDDEN)
         
         if request.user.is_staff:
-            all_users = self.get_all_users(serialized=True)
-            return Response(all_users)
+            all_users = self.get_all_users()
+            response = {'users': all_users}
+            return Response(response)
 
         else:
-            response = {'user': 'Permission denied'}
+            response = {'users': 'Permission denied'}
             return Response(response, status=status.HTTP_403_FORBIDDEN)
     
     #TODO: port decorators
     #@required_kwargs(['id'])
     def patch(self, request, *args, **kwargs):
-        # TODO: move it to object-level premission logic
+        # TODO: move it to object-level permission logic
         if (request.user.id == kwargs['id']
                 or request.user.is_staff):
 
@@ -102,14 +107,20 @@ class UserView(APIView):
                 return Response(ve, status=status.HTTP_400_BAD_REQUEST)
 
             except User.DoesNotExist as dne:
-                return Response(dne, status=status.HTTP_404_NOT_FOUND)
+                if request.user.is_staff:
+                    return Response(dne, status=status.HTTP_404_NOT_FOUND)
+                else:
+                    response = {'users': 'Permission denied'}
+                    return Response(response, status=status.HTTP_403_FORBIDDEN)
 
         else:
             response = {'user': 'Permission denied'}
             return Response(response, status=status.HTTP_403_FORBIDDEN)
-
+    
+    #TODO: port decorators
+    #@required_kwargs(['id'])
     def delete(self, request, *args, **kwargs):
-            # TODO: move it to object-level premission logic
+            # TODO: move it to object-level permission logic
             if (request.user.id == kwargs['id']
                     or request.user.is_staff):
                 
@@ -121,4 +132,8 @@ class UserView(APIView):
                     return Response(ve, status=status.HTTP_400_BAD_REQUEST)
 
                 except User.DoesNotExist as dne:
-                    return Response(dne, status=status.HTTP_404_NOT_FOUND)
+                    if request.user.is_staff:
+                        return Response(dne, status=status.HTTP_404_NOT_FOUND)
+                    else:
+                        response = {'users': 'Permission denied'}
+                        return Response(response, status=status.HTTP_403_FORBIDDEN)
