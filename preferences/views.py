@@ -8,7 +8,6 @@ from .serializers import PreferencesSerializer
 
 
 class PreferencesView(APIView):
-
     def get_all_preferences(self, serialized=True):
         all_preferences = Preferences.objects.all()
 

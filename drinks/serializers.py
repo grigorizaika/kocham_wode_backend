@@ -1,11 +1,10 @@
 from rest_framework import serializers
 
-from .model import Drink
+from .models import Drink
 
 
-class DrinkSerializer(serializer.ModelSerializer):
+class DrinkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Drink
-        fields = ['when', 'vol', 'user']
-        read_only_fields = ['user']
+        fields = ['id', 'when', 'vol', 'user']

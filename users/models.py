@@ -25,6 +25,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_drinks_by_date(self, date):
         return Drink.objects.filter(
+            user=self,
             when__year=date.year, 
             when__month=date.month,
             when__day=date.day
@@ -32,6 +33,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_drinks_by_date_range(self, date_start, date_end):
         return Drink.objects.filter(
+            user=self,
             when__gte=date_start,
             when__lt=date_end
         )

@@ -24,5 +24,6 @@ urlpatterns = [
     path('api/users/', include('users.urls', namespace='users')),
     path('api/preferences/', 
          include('preferences.urls', namespace='preferences')),
+    path('api/drinks/', include('drinks.urls', namespace='drinks')),
 
 ]
