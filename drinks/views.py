@@ -1,8 +1,12 @@
 from datetime import datetime
 from django.shortcuts import render
+
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
 
 from .models import Drink
 from .serializers import DrinkSerializer
@@ -69,35 +73,29 @@ class DrinkView(APIView):
             drinks = DrinkSerializer(drinks, many=True).data
         
         return drinks
-    
-    def get_drinks_grouped_by_user(self):
-        """
-        TODO: serialize values in key-value pairs
-        {<int:user_id>: <QuerySet:drinks>}
-        returned from Drinks.objects.group_all_by_user()
-        with DrinkSerializer(many=True)
-        """
-        raise NotImplementedError
 
-    def get_drinks_by_date_grouped_by_user(self, date):
-        """
-        TODO: serialize values in key-value pairs
-        {<int:user_id>: <QuerySet:drinks>}
-        returned from Drinks.objects.group_all_by_user()
-        with DrinkSerializer(many=True)
-        """
-        raise NotImplementedError
+    def get_drinks_grouped_by_user(
+            self, date=None, date_start=None, date_end=None):
+        drinks_by_user = Drink.objects.group_all_by_user(date)
 
-    def get_drinks_by_date_range_grouped_by_user(self, date_start, date_end):
-        """
-        TODO: serialize values in key-value pairs
-        {<int:user_id>: <QuerySet:drinks>}
-        returned from Drinks.objects.group_all_by_user()
-        with DrinkSerializer(many=True)
-        """
-        raise NotImplementedError
+        drinks_by_user = {
+            user: DrinkSerializer(drinks, many=True).data
+            for user, drinks in drinks_by_user.items()
+        }
 
+        return drinks_by_user
+
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter(name='date', in_ = openapi.IN_QUERY, type=openapi.TYPE_STRING),
+            openapi.Parameter(name='date_start', in_ = openapi.IN_QUERY, type=openapi.TYPE_STRING),
+            openapi.Parameter(name='date_end', in_ = openapi.IN_QUERY, type=openapi.TYPE_STRING),
+            openapi.Parameter(name='get_for_all_users', in_ = openapi.IN_QUERY, type=openapi.TYPE_BOOLEAN),
+            openapi.Parameter(name='group_by_user', in_ = openapi.IN_QUERY, type=openapi.TYPE_BOOLEAN),
+        ])
     def get(self, request, *args, **kwargs):
+        """
+        """
         date = request.GET.get('date')
         date_start = request.GET.get('date_start')
         date_end = request.GET.get('date_end')
@@ -123,28 +121,9 @@ class DrinkView(APIView):
                 return Response(response, status=status.HTTP_200_OK)
 
             if group_by_user:
-                if date:
-                    drinks_by_user = (
-                        self.get_drinks_by_date_grouped_by_user(date)
-                    )
-                    response = {'drinks_by_user': drinks_by_user}
-
-                    return Response(response, status=status.HTTP_200_OK)
-
-                if date_start and date_end:
-                    drinks_by_user = (
-                        self.get_drinks_by_date_range_grouped_by_user(
-                            date_start, date_end)
-                    )
-                    response = {'drinks_by_user': drinks_by_user}
-
-                    return Response(response, status=status.HTTP_200_OK)
-
-                drinks_by_user = (
-                    self.get_drinks_grouped_by_user()
-                )
+                drinks_by_user = self.get_drinks_grouped_by_user(
+                    date, date_start, date_end)
                 response = {'drinks_by_user': drinks_by_user}
-
                 return Response(response, status=status.HTTP_200_OK)
 
             drinks = self.get_all_drinks()
@@ -182,10 +161,14 @@ class DrinkView(APIView):
 
         return Response(response)
 
-
+        # manual_parameters=[
+        #     openapi.Parameter(name='when', in_ = openapi.IN_FORM, type=openapi.TYPE_STRING),
+        #     openapi.Parameter(name='vol', in_ = openapi.IN_FORM, type=openapi.TYPE_INTEGER),
+        #     openapi.Parameter(name='user', in_ = openapi.IN_FORM, type=openapi.TYPE_INTEGER),
+        # ]
     def post(self, request, *args, **kwargs):
         data = request.data
-        print(data)
+
         if 'user_id' in data:
             if not (data['user_id'] == request.user.id or request.user.is_staff):
                 response = {'user_id': 'Permission denied'}
@@ -194,7 +177,6 @@ class DrinkView(APIView):
             data['user'] = request.user.id
         
         serializer = DrinkSerializer(data=data)
-
 
         if serializer.is_valid():
             new_drink = serializer.save()
@@ -221,6 +203,3 @@ class DrinkView(APIView):
         drink.delete()
 
         return Response({}, status=status.HTTP_204_NO_CONTENT)
-
-        
-            
