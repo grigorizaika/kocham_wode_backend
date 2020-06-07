@@ -5,6 +5,8 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import generics, permissions
 
+from . import views
+
 app_name = 'api'
 
 schema_view = get_schema_view(
@@ -26,4 +28,7 @@ urlpatterns = [
     path('preferences/', 
          include('preferences.api_urls', namespace='preferences')),
     path('drinks/', include('drinks.api_urls', namespace='drinks')),
+
+    path('get_tokens/', views.get_jwt_tokens, name='get-tokens'),
+    path('refresh_tokens/', views.refresh_jwt_tokens, name='refresh-tokens'),
 ]

@@ -2,6 +2,7 @@ from django.db.models import signals
 from django.dispatch import receiver
 
 from .models import User
+from aws_utils.cognito import delete_cognito_user as utils_delete_cognito_user
 from preferences.models import Preferences
 
 
@@ -15,4 +16,4 @@ def create_and_set_user_preferences(sender, instance, created, **kwargs):
 # Or should both the creation and the deletion be in views?
 @receiver(signals.post_delete, sender=User)
 def delete_cognito_user(sender, instance, **kwargs):
-    pass
+    return utils_delete_cognito_user(instance.email)

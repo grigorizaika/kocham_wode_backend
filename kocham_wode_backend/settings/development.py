@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'users.apps.UsersConfig',
     'preferences',
     'drinks',
+    'aws_utils',
 
 ]
 
@@ -126,3 +127,15 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'django_cognito_jwt.JSONWebTokenAuthentication',
+    ],
+ }
+
+COGNITO_AWS_REGION = env('COGNITO_USER_POOL_ID')
+COGNITO_USER_POOL = env('SECRET_KEY')
+COGNITO_AUDIENCE = env('SECRET_KEY')
