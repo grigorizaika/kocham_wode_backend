@@ -22,10 +22,10 @@ def get_cognito_user(email):
 
 def create_cognito_user(username, password, **kwargs):
     client = get_client()
-    
+
     user_attributes = [
         {'Name': k, 'Value': v} 
-        for k, v in kwargs.values()
+        for k, v in kwargs.items()
     ]
 
     return client.sign_up(

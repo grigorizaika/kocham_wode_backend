@@ -1,3 +1,4 @@
+from botocore.exceptions import ClientError
 from django.db.models import signals
 from django.dispatch import receiver
 
@@ -16,4 +17,11 @@ def create_and_set_user_preferences(sender, instance, created, **kwargs):
 # Or should both the creation and the deletion be in views?
 @receiver(signals.post_delete, sender=User)
 def delete_cognito_user(sender, instance, **kwargs):
-    return utils_delete_cognito_user(instance.email)
+    try:
+        return utils_delete_cognito_user(instance.email)
+    except ClientError as e:
+        if e.response['Error']['Code'] == 'UserNotFoundException':
+            # TODO: remove pring statement
+            print(e, 'Resuming...')
+        else:
+            raise e

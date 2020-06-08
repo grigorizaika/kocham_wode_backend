@@ -30,13 +30,23 @@ class CustomUserManager(BaseUserManager):
 
     def create_user(self, email, name, surname, password=None):
         user = self._create_base_user(email, name, surname, password)
-        self._create_cognito_user(email, password)
+
+        try:
+            self._create_cognito_user(email, password)
+        except Exception as e:
+            user.delete()
+            raise e
 
         return user
 
     def create_superuser(self, email, name, surname, password=None):
         user = self._create_base_user(email, name, surname, password)
-        self._create_cognito_user(email, password)
+        
+        try:
+            self._create_cognito_user(email, password)
+        except Exception as e:
+            user.delete()
+            raise e
 
         user.is_staff = True
         user.is_superuser = True

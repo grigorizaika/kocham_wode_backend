@@ -6,6 +6,7 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 
 
 from .models import Drink
@@ -13,6 +14,8 @@ from .serializers import DrinkSerializer
 from users.models import User
 
 class DrinkView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def check_user_has_permissions(self, drink, user):
         return drink.user == user or user.is_staff
     
