@@ -20,12 +20,12 @@ def get_cognito_user(email):
                 UserPoolId=settings.COGNITO_USER_POOL_ID,
                 Username=email))
 
-def create_cognito_user(username, password, **kwargs):
+def create_cognito_user(username, password, additional_attributes):
     client = get_client()
 
     user_attributes = [
         {'Name': k, 'Value': v} 
-        for k, v in kwargs.items()
+        for k, v in additional_attributes.items()
     ]
 
     return client.sign_up(
@@ -71,6 +71,30 @@ def get_user_by_token(request, token):
     user = (auth.get_user_model().objects
             .get_or_create_for_cognito(jwt_payload))
     return user
+
+def confirm_sign_up(username, confirmation_code):
+    client = get_client()
+
+    response = client.confirm_sign_up(
+        ClientId=settings.COGNITO_USER_POOL_ID,
+        Username=username,
+        ConfirmationCode=confirmation_code,
+    )
+
+    return response
+
+def change_password(username, old_password, new_password, access_token):
+    client = get_client()
+    
+    response = client.change_password(
+        PreviousPassword=old_password,
+        ProposedPassword=new_password,
+        AccessToken=access_token
+    )
+
+    return response
+
+    
 
 def assertCognitoUserExists(email):
     try:

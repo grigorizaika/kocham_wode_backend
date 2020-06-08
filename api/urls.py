@@ -29,6 +29,7 @@ urlpatterns = [
          include('preferences.api_urls', namespace='preferences')),
     path('drinks/', include('drinks.api_urls', namespace='drinks')),
 
+    path('confirm_sign_up/', views.confirm_sign_up, name='confirm-sign-up'),
     path('get_tokens/', views.get_jwt_tokens, name='get-tokens'),
     path('refresh_tokens/', views.refresh_jwt_tokens, name='refresh-tokens'),
 ]

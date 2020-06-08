@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework import status
 from rest_framework.decorators import (
     api_view, authentication_classes, permission_classes)
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -30,6 +31,7 @@ def register_user(request):
 
 
 class UserView(APIView):
+    permission_classes = [IsAuthenticated]
     
     def get_all_users(self, serialized=True):
         all_users = User.objects.all()

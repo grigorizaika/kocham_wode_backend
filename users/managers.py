@@ -20,19 +20,23 @@ class CustomUserManager(BaseUserManager):
 
         return user
     
-    def _create_cognito_user(self, email, password):
+    def _create_cognito_user(self, email, password, attributes):
         cognito_response = create_cognito_user(
             username=email, 
             password=password,
-            email=email)
-        
+            additional_attributes=attributes)
+
         return cognito_response
 
     def create_user(self, email, name, surname, password=None):
         user = self._create_base_user(email, name, surname, password)
 
         try:
-            self._create_cognito_user(email, password)
+            attributes = {
+                'email': email,
+                'custom:is_administrator': 'False'
+            }
+            self._create_cognito_user(email, password, attributes)
         except Exception as e:
             user.delete()
             raise e
@@ -43,7 +47,11 @@ class CustomUserManager(BaseUserManager):
         user = self._create_base_user(email, name, surname, password)
         
         try:
-            self._create_cognito_user(email, password)
+            attributes = {
+                'email': email,
+                'custom:is_administrator': 'True'
+            }
+            self._create_cognito_user(email, password, attributes)
         except Exception as e:
             user.delete()
             raise e
@@ -61,10 +69,21 @@ class CustomUserManager(BaseUserManager):
         try:
             return self.get(email=payload['email'])
         except self.model.DoesNotExist:
-            return self._create_base_user(
+            user = self._create_base_user(
                 email=payload['email'], 
                 name=payload.get('given_name', None),
                 surname=payload.get('family_name', None))
 
+            is_administrator = (
+                True if payload['custom:is_administrator'].lower() == "true"
+                else False
+                )
+
+            if is_administrator:
+                user.is_staff = True
+                user.is_superuser = True
+                user.save()
+
+            return user
         
 
