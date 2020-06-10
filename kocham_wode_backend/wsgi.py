@@ -8,9 +8,17 @@ https://docs.djangoproject.com/en/2.2/howto/deployment/wsgi/
 """
 
 import os
+import environ
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'kocham_wode_backend.settings.production')
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+env_path = os.path.join(BASE_DIR, '.env')
+
+env = environ.Env()
+environ.Env.read_env(env_path)
+
+settings_location = env('DJANGO_SETTINGS_MODULE')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', settings_location)
 
 application = get_wsgi_application()
