@@ -1,3 +1,5 @@
+import traceback
+
 from django.shortcuts import render
 from rest_framework import status
 from rest_framework.decorators import api_view, authentication_classes
@@ -73,17 +75,27 @@ def refresh_jwt_tokens(request, *args, **kwargs):
 # @permission_classes([])
 # TODO: @required_body_params(['confirmation_code', 'email'])
 def confirm_sign_up(request, **kwargs):
-    
-    cognito_response = cognito_helper.confirm_sign_up(
-        username=request.data['email'],
-        confirmation_code=request.data['code']
-    )
+    try:
+        cognito_response = cognito_helper.confirm_sign_up(
+            username=request.data['email'],
+            confirmation_code=request.data['code']
+        )
+        response = {
+            'cognito_response': cognito_response
+        }
+        return Response(response)
+    except Exception as e:
+        response = { f'{e.__class__.__name__}': str(e)}
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
-    response = {
-        'cognito_response': cognito_response
-    }
-
-    return Response(response)
+# TODO: @required_body_params(['username'])
+def resend_confirmation_code(request, **kwargs):
+    try:
+        response = cognito_helper.resend_confirmation_code(
+            request.data['username'])
+    except Exception as e:
+        response = { f'{e.__class__.__name__}': str(e)}
+        return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
 # @authentication_classes([JSONWebTokenAuthentication])
@@ -94,29 +106,33 @@ def change_password(request, **kwargs):
     serializer = PasswordSerializer(data=request.data)
 
     if serializer.is_valid():
-        if not check_password(serializer.data['old_password'], user.password):
+        if not user.check_password(serializer.data['old_password']):
             response = {
                 'response': 'Old password didn\'t match'
             }
             return Response(response, status=status.HTTP_403_FORBIDDEN)
 
         try:
+            user.set_password(serializer.data['new_password'])
+
             cognito_response = cognito_helper.change_password(
+                request.user.email,
                 serializer.data['old_password'],
                 serializer.data['new_password'],
                 request.data['access_token']
             )
-        except client.exceptions.NotAuthorizedException as e:
+        except Exception as e:
             response = {
-                f'{e.__class__.__name__}': str(e)
+                f'{e.__class__.__name__}': str(e),
+                'traceback': traceback.format_stack()
             }
             return Response(response, status=status.HTTP_401_UNAUTHORIZED)
 
-        user.set_password(serializer.data['new_password'])
         user.save()
 
         response = {
-            'response': cognito_response
+            'django_response': f'Password changed for {request.user.email}',
+            'cognito_response': cognito_response
         }
 
         return Response(response, status=status.HTTP_200_OK)

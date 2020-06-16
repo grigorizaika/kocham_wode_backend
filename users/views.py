@@ -122,20 +122,17 @@ class UserView(APIView):
     #TODO: port decorators
     #@required_kwargs(['id'])
     def delete(self, request, *args, **kwargs):
-            # TODO: move it to object-level permission logic
-            if (request.user.id == kwargs['id']
-                    or request.user.is_staff):
-                
-                try:
-                    self.delete_user(kwargs['id'])
-                    return Response({}, status=status.HTTP_204_NO_CONTENT)
-
-                except ValueError as ve:
-                    return Response(ve, status=status.HTTP_400_BAD_REQUEST)
-
-                except User.DoesNotExist as dne:
-                    if request.user.is_staff:
-                        return Response(dne, status=status.HTTP_404_NOT_FOUND)
-                    else:
-                        response = {'users': 'Permission denied'}
-                        return Response(response, status=status.HTTP_403_FORBIDDEN)
+        # TODO: move it to object-level permission logic
+        if (request.user.id == kwargs['id']
+                or request.user.is_staff):
+            try:
+                self.delete_user(kwargs['id'])
+                return Response({}, status=status.HTTP_204_NO_CONTENT)
+            except ValueError as ve:
+                return Response(ve, status=status.HTTP_400_BAD_REQUEST)
+            except User.DoesNotExist as dne:
+                if request.user.is_staff:
+                    return Response(dne, status=status.HTTP_404_NOT_FOUND)
+                else:
+                    response = {'users': 'Permission denied'}
+                    return Response(response, status=status.HTTP_403_FORBIDDEN)

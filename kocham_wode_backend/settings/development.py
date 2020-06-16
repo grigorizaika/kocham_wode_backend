@@ -35,13 +35,15 @@ INSTALLED_APPS = [
     
     # third-party
     'drf_yasg',
+    'django_extensions',
     'rest_framework',
 
+
     # local
-    'users.apps.UsersConfig',
-    'preferences',
-    'drinks',
     'aws_utils',
+    'drinks',
+    'preferences',
+    'users.apps.UsersConfig',  
 
 ]
 

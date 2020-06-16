@@ -13,9 +13,13 @@ def create_and_set_user_preferences(sender, instance, created, **kwargs):
         preferences = Preferences.objects.create(user=instance)
 
 
-# NOTE: should this be here at all? 
-# Or should both the creation and the deletion be in views?
-@receiver(signals.post_delete, sender=User)
+# NOTE: automatic cognito user deletion is disabled 
+# due to the fact that there may be users on other servers
+# connected to this cognito user.
+# TODO: create some sort of user count attribute, query fot it 
+# at the time of deletion and if it is 1, then delete the cognito
+# user also
+#@receiver(signals.post_delete, sender=User)
 def delete_cognito_user(sender, instance, **kwargs):
     try:
         return utils_delete_cognito_user(instance.email)

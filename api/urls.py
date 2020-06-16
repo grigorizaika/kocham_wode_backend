@@ -30,6 +30,8 @@ urlpatterns = [
     path('drinks/', include('drinks.api_urls', namespace='drinks')),
 
     path('confirm_sign_up/', views.confirm_sign_up, name='confirm-sign-up'),
+    path('resend_confirmation_code/', views.resend_confirmation_code, name='resend-confirmation-code'),
+    path('change_password/', views.change_password, name='change-password'),
     path('get_tokens/', views.get_jwt_tokens, name='get-tokens'),
     path('refresh_tokens/', views.refresh_jwt_tokens, name='refresh-tokens'),
 ]

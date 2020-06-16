@@ -76,16 +76,26 @@ def confirm_sign_up(username, confirmation_code):
     client = get_client()
 
     response = client.confirm_sign_up(
-        ClientId=settings.COGNITO_USER_POOL_ID,
+        ClientId=settings.COGNITO_APP_CLIENT_ID,
         Username=username,
         ConfirmationCode=confirmation_code,
     )
 
     return response
 
+def resend_confirmation_code(username):
+    client = get_client()
+
+    response = client.resend_confirmation_code(
+        ClientId=settings.COGNITO_APP_CLIENT_ID,
+        Username=username,
+    )
+
+    return response
+
 def change_password(username, old_password, new_password, access_token):
     client = get_client()
-    
+
     response = client.change_password(
         PreviousPassword=old_password,
         ProposedPassword=new_password,
@@ -93,8 +103,6 @@ def change_password(username, old_password, new_password, access_token):
     )
 
     return response
-
-    
 
 def assertCognitoUserExists(email):
     try:

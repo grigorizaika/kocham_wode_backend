@@ -79,7 +79,15 @@ class DrinkView(APIView):
 
     def get_drinks_grouped_by_user(
             self, date=None, date_start=None, date_end=None):
-        drinks_by_user = Drink.objects.group_all_by_user(date)
+
+        date_args = {
+            arg: datetime.strptime(val, '%Y-%m-%d') 
+            for arg, val in locals().items() 
+            if arg != 'self'
+            and val is not None
+        }
+
+        drinks_by_user = Drink.objects.group_all_by_user(**date_args)
 
         drinks_by_user = {
             user: DrinkSerializer(drinks, many=True).data
@@ -170,11 +178,11 @@ class DrinkView(APIView):
         #     openapi.Parameter(name='user', in_ = openapi.IN_FORM, type=openapi.TYPE_INTEGER),
         # ]
     def post(self, request, *args, **kwargs):
-        data = request.data
+        data = request.data.dict()
 
-        if 'user_id' in data:
-            if not (data['user_id'] == request.user.id or request.user.is_staff):
-                response = {'user_id': 'Permission denied'}
+        if 'user' in data:
+            if not (data['user'] == request.user.id or request.user.is_staff):
+                response = {'user': 'Permission denied'}
                 return Response(response, status=status.HTTP_403_FORBIDDEN)
         else:
             data['user'] = request.user.id
@@ -183,6 +191,10 @@ class DrinkView(APIView):
 
         if serializer.is_valid():
             new_drink = serializer.save()
+            response = {'drink': f'Created drink {new_drink.id}'}
+            
+            return Response(response)
+
         else:
             response = {'drink': serializer.errors}
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
