@@ -16,7 +16,8 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '127.0.0.1',
     'localhost',
-    '.eu-central-1.compute.amazonaws.com'
+    '.eu-central-1.compute.amazonaws.com',
+    '.kochamwode.pl'
 ]
 
 # TODO: move this to base settings
