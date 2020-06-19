@@ -1,4 +1,8 @@
+import json
+
 from datetime import datetime
+from django.contrib.auth.decorators import login_required
+from django.core import serializers
 from django.shortcuts import render
 
 from drf_yasg import openapi
@@ -8,7 +12,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 
-
+from .forms import StatisticsParametersForm
 from .models import Drink
 from .serializers import DrinkSerializer
 from users.models import User
@@ -218,3 +222,67 @@ class DrinkView(APIView):
         drink.delete()
 
         return Response({}, status=status.HTTP_204_NO_CONTENT)
+
+
+# Non-API views
+# TODO: move to a separate file
+
+def get_drinks_grouped_by_user(
+       date=None, date_start=None, date_end=None):
+
+    date_args = {
+        arg: datetime.strptime(val, '%Y-%m-%d') 
+        for arg, val in locals().items() 
+        if arg != 'self'
+        and val is not None
+        and isinstance(val, str)
+    }
+
+    drinks_by_user = Drink.objects.group_all_by_user(
+        **date_args, key_attribute='email')
+
+    drinks_by_user = {
+        user: serializers.serialize('json', drinks)
+        for user, drinks in drinks_by_user.items()
+    }
+
+    return json.dumps(drinks_by_user)
+
+@login_required
+def user_statistics(request):
+
+    if request.method == 'GET':
+        form = StatisticsParametersForm()
+
+        statistics = get_drinks_grouped_by_user()
+
+        context = {
+            'statistics_parameters_form': form,
+            'statistics': statistics
+        }
+
+        return render(request, 'statistics.html', context=context)
+        
+    elif request.method == 'POST':
+        form = StatisticsParametersForm(request.POST)
+
+        if form.is_valid():
+            
+            statistics = get_drinks_grouped_by_user(
+                form.cleaned_data.get('date', None),
+                form.cleaned_data.get('date_start', None),
+                form.cleaned_data.get('date_end', None)
+            )
+
+            context = {
+                'statistics_parameters_form': form,
+                'statistics': statistics
+            }
+            return render(request, 'statistics.html', context=context)
+        else:
+            context = {
+                'statistics_parameters_form': form,
+            }
+            return render(request, 'statistics.html', context=context)
+
+    return render(request, 'statistics.html')

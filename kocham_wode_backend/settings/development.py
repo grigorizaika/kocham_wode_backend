@@ -7,8 +7,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 env = environ.Env()
 environ.Env.read_env(env.str(BASE_DIR, '.env'))
 
-
 SECRET_KEY = env('SECRET_KEY')
+
+STATICFILES_DIRS = ( os.path.join('static'), )
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -35,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     # third-party
+    'crispy_forms',
     'drf_yasg',
     'django_extensions',
     'rest_framework',
@@ -63,7 +65,7 @@ ROOT_URLCONF = 'kocham_wode_backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -135,6 +137,15 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_URL = '/static/'
+
+# TODO: clear this
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
+
+PROJECT_ROOT = os.path.dirname(BASE_DIR)
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -151,3 +162,7 @@ COGNITO_AWS_REGION = env('AWS_COGNITO_REGION')
 COGNITO_USER_POOL_ID = env('AWS_COGNITO_USER_POOL')
 COGNITO_USER_POOL = COGNITO_USER_POOL_ID
 
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+LOGIN_URL = '/login/'
