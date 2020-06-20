@@ -250,7 +250,6 @@ def get_drinks_grouped_by_user(
 
 @login_required
 def user_statistics(request):
-
     if request.method == 'GET':
         form = StatisticsParametersForm()
 
@@ -258,7 +257,7 @@ def user_statistics(request):
 
         context = {
             'statistics_parameters_form': form,
-            'statistics': statistics
+            'statistics': statistics,
         }
 
         return render(request, 'statistics.html', context=context)

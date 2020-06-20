@@ -149,7 +149,6 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
         'django_cognito_jwt.JSONWebTokenAuthentication',
     ],
  }
@@ -166,3 +165,8 @@ COGNITO_USER_POOL = COGNITO_USER_POOL_ID
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGIN_URL = '/login/'
+
+AUTHENTICATION_BACKENDS = [
+    # 'django.contrib.auth.backends.ModelBackend',
+    'aws_utils.backends.CognitoBackend',
+]
