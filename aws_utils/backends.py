@@ -21,8 +21,8 @@ class CognitoBackend():
         except TokenError:
             return 
 
-        # TODO: consider if it may be better to user attribute 
-        # mapping insted of letting the user handling it themselves
+        # TODO: consider if it may be better to user attribute
+        # mapping instead of letting the user handling it themselves
         user = get_user_model().objects.get_or_create_for_cognito(payload)
     
         return user

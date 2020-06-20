@@ -3,6 +3,7 @@ import json
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
+from django.conf import settings
 from django.shortcuts import render
 
 from drf_yasg import openapi
@@ -252,12 +253,19 @@ def get_drinks_grouped_by_user(
 def user_statistics(request):
     if request.method == 'GET':
         form = StatisticsParametersForm()
-
+        
         statistics = get_drinks_grouped_by_user()
+
+        debug_data = {
+            'BASE_DIR': settings.BASE_DIR,
+            'STATICFILES_DIRS': settings.STATICFILES_DIRS,
+
+        }
 
         context = {
             'statistics_parameters_form': form,
             'statistics': statistics,
+            'debug_data': debug_data
         }
 
         return render(request, 'statistics.html', context=context)
