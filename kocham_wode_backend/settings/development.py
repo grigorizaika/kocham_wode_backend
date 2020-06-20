@@ -9,8 +9,6 @@ environ.Env.read_env(env.str(BASE_DIR, '.env'))
 
 SECRET_KEY = env('SECRET_KEY')
 
-STATICFILES_DIRS = ( os.path.join('static'), )
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -135,8 +133,6 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
 
 # TODO: clear this

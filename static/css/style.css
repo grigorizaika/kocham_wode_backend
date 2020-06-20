@@ -1,0 +1,9 @@
+#results {
+    margin: 8px;
+    padding: 8px;
+    display: flex;
+}
+
+#results textarea {
+    width: 100%;
+}
