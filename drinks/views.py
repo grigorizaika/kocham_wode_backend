@@ -256,18 +256,11 @@ def user_statistics(request):
         
         statistics = get_drinks_grouped_by_user()
 
-        debug_data = {
-            'BASE_DIR': settings.BASE_DIR,
-            'STATICFILES_DIRS': settings.STATICFILES_DIRS,
-
-        }
-
         context = {
             'statistics_parameters_form': form,
             'statistics': statistics,
-            'debug_data': debug_data
         }
-
+        
         return render(request, 'statistics.html', context=context)
         
     elif request.method == 'POST':
