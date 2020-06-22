@@ -14,12 +14,19 @@
     <div class="row">
         <div class="col-md-12">
             <div id="results">
-                <textarea name="" cols="30" rows="10">
+                <textarea name="" cols="80" rows="30">
                     {{ statistics }}
                 </textarea>
+                <form
+                 onsubmit="download('drinks_by_user.txt', $('#results textarea').text())">
+                    <button type="submit" class="btn btn-light">
+                        <i class="fa fa-download" aria-hidden="true"></i>
+                    </button>
+                </form>
             </div>
         </div>
     </div>
+
 
 <script src="{% static 'js/main.js' %}"></script>
 {% endblock content %}

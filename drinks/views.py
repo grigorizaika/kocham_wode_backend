@@ -243,10 +243,11 @@ def get_drinks_grouped_by_user(
         **date_args, key_attribute='email')
 
     drinks_by_user = {
-        user: serializers.serialize('json', drinks)
+        # user: serializers.serialize('json', drinks)
+        user: DrinkSerializer(drinks, many=True).data
         for user, drinks in drinks_by_user.items()
     }
-
+    
     return json.dumps(drinks_by_user)
 
 @login_required

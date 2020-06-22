@@ -1,3 +1,9 @@
+#logout-button {
+    position: absolute;
+    right: 8px;
+    top: 8px;
+}
+
 #results {
     margin: 8px;
     padding: 8px;
@@ -5,5 +11,5 @@
 }
 
 #results textarea {
-    width: 100%;
+    /* width: 80%; */
 }
