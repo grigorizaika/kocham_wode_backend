@@ -1,7 +1,7 @@
 import json
 
 from datetime import datetime
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, staff_member_required
 from django.core import serializers
 from django.conf import settings
 from django.shortcuts import render
@@ -251,6 +251,7 @@ def get_drinks_grouped_by_user(
     return json.dumps(drinks_by_user)
 
 @login_required
+@staff_member_required
 def user_statistics(request):
     if request.method == 'GET':
         form = StatisticsParametersForm()
