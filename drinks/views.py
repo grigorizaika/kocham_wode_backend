@@ -1,7 +1,8 @@
 import json
 
 from datetime import datetime
-from django.contrib.auth.decorators import login_required, staff_member_required
+from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
 from django.core import serializers
 from django.conf import settings
 from django.shortcuts import render

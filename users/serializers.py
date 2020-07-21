@@ -12,7 +12,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
         return User.objects.create_user(
             email=validated_data['email'],
             name=validated_data['name'],
-            surname=validated_data['surname'],
             password=validated_data['password']
         )
 
@@ -27,7 +26,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'name', 'surname', 'password', 'password2']
+        fields = ['email', 'name', 'password', 'password2']
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -35,5 +34,5 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'name', 'surname', 'preferences']
+        fields = ['id', 'email', 'name', 'preferences']
         read_only_fields = ['preferences']

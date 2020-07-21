@@ -15,7 +15,7 @@ def register_user(request):
     """ 
     User registration endpoint.
     parameters: 
-    email, name, surname, password, password2
+    email, name, password, password2
     """
 
     serializer = RegistrationSerializer(data=request.data)

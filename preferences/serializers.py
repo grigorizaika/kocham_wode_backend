@@ -8,4 +8,4 @@ class PreferencesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Preferences
-        fields = ['id', 'age', 'weight', 'cup_vol', 'user']
+        fields = ['id', 'age', 'weight', 'cup_vol', 'height', 'is_male', 'user']

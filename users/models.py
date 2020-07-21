@@ -8,7 +8,6 @@ from drinks.models import Drink
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email'), unique=True)
     name = models.CharField(max_length=40, null=True, blank=True)
-    surname = models.CharField(max_length=40, null=True, blank=True)
 
     is_staff = models.BooleanField(default=False)
 
