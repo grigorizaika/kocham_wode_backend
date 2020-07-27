@@ -71,7 +71,8 @@ class PreferencesView(APIView):
                 preferences = self.get_preferences_by_id(kwargs['id'])
             except Preferences.DoesNotExist as dne:
                 if request.user.is_staff:
-                    return Response(dne, status=status.HTTP_404_NOT_FOUND)
+                    response = {'preferences': str(dne)}
+                    return Response(response, status=status.HTTP_404_NOT_FOUND)
                 else:
                     response = {'preferences': 'Permission denied'}
                     return Response(response, status=status.HTTP_403_FORBIDDEN)
@@ -94,7 +95,8 @@ class PreferencesView(APIView):
                 preferences = self.get_preferences_by_user_id(kwargs['user_id'])
             except Preferences.DoesNotExist as dne:
                 if request.user.is_staff:
-                    return Response(dne, status=status.HTTP_404_NOT_FOUND)
+                    response = {'preferences': str(dne)}
+                    return Response(response, status=status.HTTP_404_NOT_FOUND)
                 else:
                     response = {'users': 'Permission denied'}
                     return Response(response, status=status.HTTP_403_FORBIDDEN)
@@ -120,7 +122,8 @@ class PreferencesView(APIView):
                 preferences = self.update_preferences_by_id(kwargs['id'], data)
             except Preferences.DoesNotExist as dne:
                 if request.user.is_staff:
-                    return Response(dne, status=status.HTTP_404_NOT_FOUND)
+                    response = {'preferences': str(dne)}
+                    return Response(response, status=status.HTTP_404_NOT_FOUND)
                 else:
                     response = {'preferences': 'Permission denied'}
                     return Response(response, status=status.HTTP_403_FORBIDDEN)
@@ -143,7 +146,8 @@ class PreferencesView(APIView):
                 preferences = self.update_preferences_by_user_id(kwargs['user_id'], data)
             except Preferences.DoesNotExist as dne:
                 if request.user.is_staff:
-                    return Response(dne, status=status.HTTP_404_NOT_FOUND)
+                    response = {'preferences': str(dne)}
+                    return Response(response, status=status.HTTP_404_NOT_FOUND)
                 else:
                     response = {'users': 'Permission denied'}
                     return Response(response, status=status.HTTP_403_FORBIDDEN)
@@ -160,7 +164,8 @@ class PreferencesView(APIView):
                 preferences = self.delete_preferences_by_id(kwargs['id'])
             except Preferences.DoesNotExist as dne:
                 if request.user.is_staff:
-                    return Response(dne, status=status.HTTP_404_NOT_FOUND)
+                    response = {'preferences': str(dne)}
+                    return Response(response, status=status.HTTP_404_NOT_FOUND)
                 else:
                     response = {'preferences': 'Permission denied'}
                     return Response(response, status=status.HTTP_403_FORBIDDEN)
@@ -182,7 +187,8 @@ class PreferencesView(APIView):
                 preferences = self.delete_preferences_by_user_id(kwargs['user_id'])
             except Preferences.DoesNotExist as dne:
                 if request.user.is_staff:
-                    return Response(dne, status=status.HTTP_404_NOT_FOUND)
+                    response = {'preferences': str(dne)}
+                    return Response(response, status=status.HTTP_404_NOT_FOUND)
                 else:
                     response = {'users': 'Permission denied'}
                     return Response(response, status=status.HTTP_403_FORBIDDEN)

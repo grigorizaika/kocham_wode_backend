@@ -73,7 +73,8 @@ class UserView(APIView):
 
                 except User.DoesNotExist as dne:
                     if request.user.is_staff:
-                        return Response(dne, status=status.HTTP_404_NOT_FOUND)
+                        response = {'users': str(dne)}
+                        return Response(response, status=status.HTTP_404_NOT_FOUND)
                     else:
                         response = {'users': 'Permission denied'}
                         return Response(response, status=status.HTTP_403_FORBIDDEN)
@@ -110,7 +111,8 @@ class UserView(APIView):
 
             except User.DoesNotExist as dne:
                 if request.user.is_staff:
-                    return Response(dne, status=status.HTTP_404_NOT_FOUND)
+                    response = {'users': str(dne)}
+                    return Response(response, status=status.HTTP_404_NOT_FOUND)
                 else:
                     response = {'users': 'Permission denied'}
                     return Response(response, status=status.HTTP_403_FORBIDDEN)
@@ -132,7 +134,8 @@ class UserView(APIView):
                 return Response(ve, status=status.HTTP_400_BAD_REQUEST)
             except User.DoesNotExist as dne:
                 if request.user.is_staff:
-                    return Response(dne, status=status.HTTP_404_NOT_FOUND)
+                    response = {'users': str(dne)}
+                    return Response(response, status=status.HTTP_404_NOT_FOUND)
                 else:
                     response = {'users': 'Permission denied'}
                     return Response(response, status=status.HTTP_403_FORBIDDEN)
