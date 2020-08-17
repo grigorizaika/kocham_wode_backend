@@ -118,6 +118,11 @@ class PreferencesView(APIView):
         data = request.data
 
         if 'id' in kwargs:
+            if (preferences.user != request.user.id
+                    and not request.user.is_staff):
+                response = {'users': 'Permission denied'}
+                return Response(response, status=status.HTTP_403_FORBIDDEN)
+
             try:
                 preferences = self.update_preferences_by_id(kwargs['id'], data)
             except Preferences.DoesNotExist as dne:
@@ -128,13 +133,9 @@ class PreferencesView(APIView):
                     response = {'preferences': 'Permission denied'}
                     return Response(response, status=status.HTTP_403_FORBIDDEN)
 
-            if (preferences.user == request.user.id
-                    or request.user.is_staff):
-                response = {'preferences': f'Updated preferences {preferences.id}'}
-                return Response(response)
-            else:
-                response = {'preferences': 'Permission denied'}
-                return Response(response, status=status.HTTP_403_FORBIDDEN)
+            response = {'preferences': f'Updated preferences {preferences.id}'}
+            return Response(response)
+
 
         if 'user_id' in kwargs:
             if (kwargs['user_id'] != request.user.id
@@ -155,7 +156,22 @@ class PreferencesView(APIView):
             response = {'preferences': f'Updated preferences {preferences.id}'}
             return Response(response)
 
-        response = {'preferences': 'ID not specified'}
+        if 'who' in kwargs:
+            user_alias = kwargs['who']
+
+            if user_alias == 'me':
+                preferences = self.update_preferences_by_user_id(request.user.id, data)
+            else:
+                response = {'preferences': f'Unknown user alias {user_alias}'}
+                return Response(response, status=status.HTTP_400_BAD_REQUEST)
+
+            response = {'preferences': f'Updated preferences {preferences.id}'}
+            return Response(response)
+            
+
+        
+
+        response = {'preferences': 'Neither ID nor user specified'}
         return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, *args, **kwargs):
